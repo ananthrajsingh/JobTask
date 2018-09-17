@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,11 +42,13 @@ public class ContactsFragment extends Fragment {
                 JSONObject contact = jsonArray.getJSONObject(i);
                 int age = contact.getInt("age");
                 String name = contact.getString("name");
+
                 String email = contact.getString("email");
                 String gender = contact.getString("gender");
                 String phone = contact.getString("phone");
                 Contact contactObject = new Contact(age, name, gender, email, phone);
                 mContacts.add(contactObject);
+
             }
 
         }
