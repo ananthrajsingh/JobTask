@@ -3,6 +3,7 @@ package com.kisannetwork.kisannetwork.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -27,8 +28,20 @@ public class ContactDetailActivity extends AppCompatActivity {
         mSendMessageButton = findViewById(R.id.detail_send_message_button);
 
         Intent intent = getIntent();
-        mNameTv.setText(intent.getStringExtra("name"));
-        mPhoneTv.setText("+" + intent.getStringExtra("phone"));
+        final String name = intent.getStringExtra("name");
+        final String phone = intent.getStringExtra("phone");
+        mNameTv.setText(name);
+        mPhoneTv.setText("+" + phone);
         mEmailTv.setText(intent.getStringExtra("email"));
+
+        mSendMessageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ContactDetailActivity.this, SendMessageActivity.class);
+                intent.putExtra("name", name);
+                intent.putExtra("phone", phone);
+                startActivity(intent);
+            }
+        });
     }
 }

@@ -20,7 +20,8 @@
         <activity android:name=".Fragments.ContactsFragment" />
         <activity android:name=".Fragments.HistoryFragment" />
         <activity android:name=".Activity.ContactDetailAcivity" />
-        <activity android:name=".Activity.ContactDetailActivity"></activity>
+        <activity android:name=".Activity.ContactDetailActivity" />
+        <activity android:name=".Activity.SendMessageActivity"></activity>
     </application>
 
 </manifest>
