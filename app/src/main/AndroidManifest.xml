@@ -9,11 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
-
-        </activity>
-        <activity android:name=".TabActivity">
-
+        <activity android:name=".MainActivity" />
+        <activity android:name=".Activity.TabActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,7 +18,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".Fragments.ContactsFragment" />
-        <activity android:name=".Fragments.HistoryFragment"></activity>
+        <activity android:name=".Fragments.HistoryFragment" />
+        <activity android:name=".Activity.ContactDetailAcivity" />
+        <activity android:name=".Activity.ContactDetailActivity"></activity>
     </application>
 
 </manifest>

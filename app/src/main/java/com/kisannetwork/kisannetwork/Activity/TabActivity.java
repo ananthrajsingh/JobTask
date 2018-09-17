@@ -1,4 +1,4 @@
-package com.kisannetwork.kisannetwork;
+package com.kisannetwork.kisannetwork.Activity;
 
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -8,6 +8,8 @@ import android.os.Bundle;
 
 import com.kisannetwork.kisannetwork.Fragments.ContactsFragment;
 import com.kisannetwork.kisannetwork.Fragments.HistoryFragment;
+import com.kisannetwork.kisannetwork.R;
+import com.kisannetwork.kisannetwork.ViewPagerAdapter;
 
 public class TabActivity extends AppCompatActivity {
 
