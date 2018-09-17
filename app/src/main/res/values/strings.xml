@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">KisanNetwork</string>
+    <string name="api_key">3c5540cb</string>
+    <string name="api_secret">9qCVSBBUJQ040Ph5</string>
+
+    <string name="auth_token">0d884b52c7ed7c1bcc18c4e3e9c9fa7a</string>
+    <string name="account_sid">AC31cbd976585bf0c13d479d6c008bcf41</string>
 </resources>
