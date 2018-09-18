@@ -10,6 +10,10 @@ import com.kisannetwork.kisannetwork.Fragments.HistoryFragment;
 import com.kisannetwork.kisannetwork.R;
 import com.kisannetwork.kisannetwork.Adapter.ViewPagerAdapter;
 
+/**
+ * This activity contains both of our fragments. This is what we will see on the app
+ * startup.
+ */
 public class TabActivity extends AppCompatActivity {
 
     @Override
@@ -20,6 +24,7 @@ public class TabActivity extends AppCompatActivity {
         ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
         ViewPagerAdapter pagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
 
+        // Adding fragments
         pagerAdapter.addFragment(new ContactsFragment(), "Contacts");
         pagerAdapter.addFragment(new HistoryFragment(), "History");
         viewPager.setAdapter(pagerAdapter);

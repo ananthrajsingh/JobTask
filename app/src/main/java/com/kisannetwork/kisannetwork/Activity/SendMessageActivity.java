@@ -1,6 +1,7 @@
 package com.kisannetwork.kisannetwork.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Entity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.StrictMode;
@@ -45,6 +46,13 @@ import java.util.Random;
 
 import static android.view.View.GONE;
 
+/**
+ * This Activity is used to Send message to the particular selected contact.
+ * Here we will have a pre-generated otp in edittext.
+ *
+ * Since I'm using trial account of Twilio, it only allows to send message to numbers which are verified.
+ *
+ */
 public class SendMessageActivity extends AppCompatActivity {
 
 
@@ -55,8 +63,12 @@ public class SendMessageActivity extends AppCompatActivity {
     private ProgressBar mProgressBar;
     private String mOtp;
     private String mName;
-    private boolean mFlag;
     private boolean mIsExceptionThrown;
+    /*
+     * WARNING: This project should not be uploaded to public repository as it contains these Keys.
+     * By the way, this account is trial account for now. It would be more of the threat if we get
+     * paid account.
+     */
     private static String ACCOUNT_SID = "AC31cbd976585bf0c13d479d6c008bcf41";
     private static String AUTH_TOKEN = "0d884b52c7ed7c1bcc18c4e3e9c9fa7a";
 
@@ -67,13 +79,17 @@ public class SendMessageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_message);
         getSupportActionBar().setTitle("Compose message");
+        //This is coming from ContactDetailActivity
         Intent intent = getIntent();
         mName = intent.getStringExtra("name");
         final String phone = intent.getStringExtra("phone");
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        //Below code was used earlier when not using AsyncTask, it would forcefully do network
+        //operation on UI thread
 
-        StrictMode.setThreadPolicy(policy);
+//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//
+//        StrictMode.setThreadPolicy(policy);
 
 
         mViewModel = ViewModelProviders.of(this).get(HistoryViewModel.class);
@@ -88,6 +104,7 @@ public class SendMessageActivity extends AppCompatActivity {
         mTrasparentFrame.setVisibility(GONE);
 
         mNameTextView.setText(mName);
+        //We need otp to be stored in history
         mOtp = getRandomNumberString();
         String message = "Hi.  Your  OTP  is: " + mOtp;
         mMessageEditText.setText(message);
@@ -112,6 +129,10 @@ public class SendMessageActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * This is a helper function to generate otp.
+     * @return 6 digit OTP
+     */
     public static String getRandomNumberString() {
         // It will generate 6 digit random Number.
         // from 0 to 999999
@@ -123,6 +144,15 @@ public class SendMessageActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * This function is called when user clicks on SEND. Here we are talking to Twilio.
+     * We will send the message and check the response.
+     *
+     * Since this involves network operation, we cannot have it running on UI thread. Thus,
+     * AsyncTask is used for the rescue.
+     * @param phone number to send message to
+     * @param message the message to be sent
+     */
     private void sendSMS(String phone, String message){
         HttpClient httpclient = new DefaultHttpClient();
 
@@ -150,47 +180,21 @@ public class SendMessageActivity extends AppCompatActivity {
                     nameValuePairs));
 
 
-
-//            // Execute HTTP Post Request
-//            HttpResponse response = httpclient.execute(httppost);
-//            HttpEntity entity = response.getEntity();
-////            System.out.println("Entity post is: "
-////                    + EntityUtils.toString(entity));
-//            Log.e("http log ", "Entity post is: "
-//                    + EntityUtils.toString(entity));
-//
-//            mProgressBar.setVisibility(GONE);
-//            mTrasparentFrame.setVisibility(GONE);
-//            mMessageEditText.setText("");
-//            Toast.makeText(getBaseContext(), "Message sent", Toast.LENGTH_LONG).show();
-
-
-//        } catch (ClientProtocolException e) {
-
+            //Do network task using AsyncTask
             SendMessageAsyncTask asyncTask = new SendMessageAsyncTask(httpclient, httppost);
             asyncTask.execute();
 
         } catch (IOException e) {
             e.printStackTrace();
-            mFlag = true;
         }
 
-        if (!mFlag){
-            long time = System.currentTimeMillis();
-            History history = new History(mName, mOtp, time);
-            mViewModel.insert(history);
-            Toast.makeText(this, "Message sent!", Toast.LENGTH_LONG).show();
-        }
-        else{
-            mFlag = false;
-
-        }
 
 
         mProgressBar.setVisibility(GONE);
         mTrasparentFrame.setVisibility(GONE);
     }
 
+    //Okay, I am aware this is a memory leak, since this task time bound, I'll get back to this later
     private class SendMessageAsyncTask extends AsyncTask<Void, Void, Void>{
 
         private HttpClient mHttpClient;
@@ -218,10 +222,14 @@ public class SendMessageActivity extends AppCompatActivity {
 //                    + EntityUtils.toString(entity));
             Log.e("http log ", "Entity post is: "
                     + EntityUtils.toString(entity));
+            if(EntityUtils.toString(entity).contains("The number  is unverified")){
+                mIsExceptionThrown = true;
+            }
             }
             catch (Exception e){
                 e.printStackTrace();
                 mIsExceptionThrown = true;
+                return null;
             }
             return null;
         }
@@ -232,13 +240,26 @@ public class SendMessageActivity extends AppCompatActivity {
 
             mProgressBar.setVisibility(GONE);
             mTrasparentFrame.setVisibility(GONE);
-            mMessageEditText.setText("");
+            Log.e("onPostExecute", "mIsExceptionThrown - " + mIsExceptionThrown);
             if (mIsExceptionThrown){
                 //Message not sent
-                Toast.makeText(getBaseContext(), "Failed!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "Failed! Verify your number.", Toast.LENGTH_LONG).show();
 
             }
-//            Toast.makeText(getBaseContext(), "Message sent", Toast.LENGTH_LONG).show();
+            else{
+                /*
+                 *************************************************************************************
+                 * Storing this message in history_database
+                 *************************************************************************************
+                 */
+                long time = System.currentTimeMillis();
+                History history = new History(mName, mOtp, time);
+                mViewModel.insert(history);
+
+
+                mMessageEditText.setText("");
+                Toast.makeText(getBaseContext(), "Message sent!", Toast.LENGTH_LONG).show();
+            }
         }
     }
 

@@ -2,6 +2,7 @@ package com.kisannetwork.kisannetwork.Model;
 
 /**
  * Created by ananthrajsingh on 17/09/18
+ * Model class of Contact
  */
 public class Contact {
 

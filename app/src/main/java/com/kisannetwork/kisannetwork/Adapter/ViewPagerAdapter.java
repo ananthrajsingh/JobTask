@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * Created by ananthrajsingh on 17/09/18
+ * This is used by TabActivity to add fragments to it.
  */
 public class ViewPagerAdapter extends FragmentPagerAdapter {
 

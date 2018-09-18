@@ -5,6 +5,9 @@ import android.arch.persistence.room.PrimaryKey;
 
 /**
  * Created by ananthrajsingh on 17/09/18
+ * Model class of history
+ *
+ * This is the Entity for the database of History.
  */
 @Entity
 public class History {

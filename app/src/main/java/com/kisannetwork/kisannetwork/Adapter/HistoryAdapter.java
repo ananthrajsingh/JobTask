@@ -18,6 +18,10 @@ import java.util.List;
 
 /**
  * Created by ananthrajsingh on 17/09/18
+ * This adapter is used to populate recycler view in HistoryFragment.
+ ***************************************************************************************************
+ * For proper documentation of functions, see ContactsAdapter class
+ ***************************************************************************************************
  */
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
 
@@ -49,11 +53,17 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         holder.otp.setText(currentHistory.getOtp());
 
 
+        /*
+         * We want date in format dd/MM/yyyy from the milliseconds
+         */
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         String dateString = formatter.format(new Date(currentHistory.getTime()));
 
         holder.date.setText(dateString);
 
+        /*
+         * We also want time from milliseconds
+         */
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(currentHistory.getTime());
         String time = cal.get(Calendar.HOUR) + ":" + cal.get(Calendar.MINUTE);
@@ -79,7 +89,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         private TextView date;
         private TextView time;
 
-        public ViewHolder(View itemView) {
+        private ViewHolder(View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.history_name_tv);
             otp = itemView.findViewById(R.id.history_otp_tv);

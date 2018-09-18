@@ -26,7 +26,7 @@ import java.util.List;
 
 public class HistoryFragment extends Fragment {
 
-    private ArrayList<History> mHistory;
+//    private ArrayList<History> mHistory;
     private RecyclerView mRecyclerView;
     private HistoryAdapter mAdapter;
     private HistoryViewModel mViewModel;
@@ -51,6 +51,14 @@ public class HistoryFragment extends Fragment {
         mRecyclerView = view.findViewById(R.id.history_recyclerView);
 
         mAdapter = new HistoryAdapter(getContext());
+
+        /*
+         * This is done here because in onCreate mRecyclerView will throw NullPointerException.
+         *
+         * This is because we cannot call findViewById in onCreate, so by the time we do
+         * operations on mRecyclerView, it is not even connected to its xml counterpart, thus
+         * throwing the exception.
+         */
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 

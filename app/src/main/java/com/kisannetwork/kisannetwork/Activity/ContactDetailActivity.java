@@ -9,6 +9,12 @@ import android.widget.TextView;
 
 import com.kisannetwork.kisannetwork.R;
 
+/**
+ * This Activity is used to show Details of a particular activity when a contact is clicked.
+ *
+ * This class has mainly self-explanatory stuff, thus has minimal comments. What is happening in here
+ * would be easily understandable by any novice Android developer.
+ */
 public class ContactDetailActivity extends AppCompatActivity {
 
     private TextView mNameTv;
@@ -27,12 +33,16 @@ public class ContactDetailActivity extends AppCompatActivity {
         mEmailTv = findViewById(R.id.detail_email_tv);
         mSendMessageButton = findViewById(R.id.detail_send_message_button);
 
+        /*
+         * Getting intent from ContactsFragment
+         */
         Intent intent = getIntent();
         final String name = intent.getStringExtra("name");
         final String phone = intent.getStringExtra("phone");
         mNameTv.setText(name);
         mPhoneTv.setText("+" + phone);
         mEmailTv.setText(intent.getStringExtra("email"));
+
 
         mSendMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
