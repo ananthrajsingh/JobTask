@@ -228,8 +228,8 @@ public class SendMessageActivity extends AppCompatActivity {
             }
             catch (Exception e){
                 e.printStackTrace();
-                mIsExceptionThrown = true;
-                return null;
+//                mIsExceptionThrown = true;
+//                return null;
             }
             return null;
         }
@@ -244,7 +244,7 @@ public class SendMessageActivity extends AppCompatActivity {
             if (mIsExceptionThrown){
                 //Message not sent
                 Toast.makeText(getBaseContext(), "Failed! Verify your number.", Toast.LENGTH_LONG).show();
-
+                mIsExceptionThrown = false;
             }
             else{
                 /*

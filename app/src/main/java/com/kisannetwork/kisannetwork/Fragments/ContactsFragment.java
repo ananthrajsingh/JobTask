@@ -77,7 +77,8 @@ public class ContactsFragment extends Fragment implements ContactsAdapter.ItemCl
                  * ***********************************************************************************
                  */
                 //TODO Correct the hardwired phone number after check is done
-                Contact contactObject = new Contact(age, name, gender, email, "919971792703");
+                //919971792703
+                Contact contactObject = new Contact(age, name, gender, email, "918006303375");
                 mContacts.add(contactObject);
 
             }
