@@ -156,8 +156,14 @@ public class SendMessageActivity extends AppCompatActivity {
     private void sendSMS(String phone, String message){
         HttpClient httpclient = new DefaultHttpClient();
 
+        /*
+         * Our app should know who to talk to.
+         */
         HttpPost httppost = new HttpPost(
                 "https://api.twilio.com/2010-04-01/Accounts/AC31cbd976585bf0c13d479d6c008bcf41/SMS/Messages");
+        /*
+         * I guess Twilio doesn't talks to everyone, so we will have to follow this procedure.
+         */
         String base64EncodedCredentials = "Basic "
                 + Base64.encodeToString(
                 (ACCOUNT_SID + ":" + AUTH_TOKEN).getBytes(),
@@ -165,6 +171,9 @@ public class SendMessageActivity extends AppCompatActivity {
 
         httppost.setHeader("Authorization",
                 base64EncodedCredentials);
+        /*
+         * Below we are preparing for our short talk with Twilio.
+         */
         try {
 
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
@@ -181,10 +190,14 @@ public class SendMessageActivity extends AppCompatActivity {
 
 
             //Do network task using AsyncTask
+            /*
+             * Talking to Twilio
+             */
             SendMessageAsyncTask asyncTask = new SendMessageAsyncTask(httpclient, httppost);
             asyncTask.execute();
 
         } catch (IOException e) {
+            //Things didn't go as planned
             e.printStackTrace();
         }
 
@@ -218,8 +231,7 @@ public class SendMessageActivity extends AppCompatActivity {
             try{
                 HttpResponse response = mHttpClient.execute(mHttpPost);
                 HttpEntity entity = response.getEntity();
-//            System.out.println("Entity post is: "
-//                    + EntityUtils.toString(entity));
+
             Log.e("http log ", "Entity post is: "
                     + EntityUtils.toString(entity));
             if(EntityUtils.toString(entity).contains("The number  is unverified")){

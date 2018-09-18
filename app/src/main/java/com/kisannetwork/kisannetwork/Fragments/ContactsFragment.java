@@ -78,10 +78,17 @@ public class ContactsFragment extends Fragment implements ContactsAdapter.ItemCl
                  */
                 //TODO Correct the hardwired phone number after check is done
                 //919971792703
-                Contact contactObject = new Contact(age, name, gender, email, "918006303375");
+                Contact contactObject = new Contact(age, name, gender, email, "919971792703");
                 mContacts.add(contactObject);
 
             }
+            /*
+             * Setting a different phone number at last contact.
+             * This number is not verified on Twilio. Therefore it can be used to check error message.
+             * Which is thrown when number is not a verified number.
+             */
+            int size = mContacts.size();
+            mContacts.get(size - 2).setPhone("918299577148");
 
         }
         catch (JSONException e){
