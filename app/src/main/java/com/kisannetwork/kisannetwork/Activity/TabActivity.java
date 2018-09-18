@@ -1,7 +1,6 @@
 package com.kisannetwork.kisannetwork.Activity;
 
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,7 +8,7 @@ import android.os.Bundle;
 import com.kisannetwork.kisannetwork.Fragments.ContactsFragment;
 import com.kisannetwork.kisannetwork.Fragments.HistoryFragment;
 import com.kisannetwork.kisannetwork.R;
-import com.kisannetwork.kisannetwork.ViewPagerAdapter;
+import com.kisannetwork.kisannetwork.Adapter.ViewPagerAdapter;
 
 public class TabActivity extends AppCompatActivity {
 

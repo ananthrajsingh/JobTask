@@ -1,6 +1,8 @@
 package com.kisannetwork.kisannetwork.Activity;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +16,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kisannetwork.kisannetwork.HistoryViewModel;
+import com.kisannetwork.kisannetwork.Model.History;
 import com.kisannetwork.kisannetwork.R;
 import com.nexmo.client.NexmoClient;
 import com.nexmo.client.NexmoClientException;
@@ -49,8 +53,14 @@ public class SendMessageActivity extends AppCompatActivity {
     private Button mSendButton;
     private FrameLayout mTrasparentFrame;
     private ProgressBar mProgressBar;
+    private String mOtp;
+    private String mName;
+    private boolean mFlag;
+    private boolean mIsExceptionThrown;
     private static String ACCOUNT_SID = "AC31cbd976585bf0c13d479d6c008bcf41";
     private static String AUTH_TOKEN = "0d884b52c7ed7c1bcc18c4e3e9c9fa7a";
+
+    private HistoryViewModel mViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +68,15 @@ public class SendMessageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_send_message);
         getSupportActionBar().setTitle("Compose message");
         Intent intent = getIntent();
-        String name = intent.getStringExtra("name");
+        mName = intent.getStringExtra("name");
         final String phone = intent.getStringExtra("phone");
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 
         StrictMode.setThreadPolicy(policy);
 
+
+        mViewModel = ViewModelProviders.of(this).get(HistoryViewModel.class);
 
 
         mNameTextView = findViewById(R.id.message_name_textview);
@@ -75,9 +87,9 @@ public class SendMessageActivity extends AppCompatActivity {
         mProgressBar.setVisibility(GONE);
         mTrasparentFrame.setVisibility(GONE);
 
-        mNameTextView.setText(name);
-        String otp = getRandomNumberString();
-        String message = "Hi.  Your  OTP  is: " + otp;
+        mNameTextView.setText(mName);
+        mOtp = getRandomNumberString();
+        String message = "Hi.  Your  OTP  is: " + mOtp;
         mMessageEditText.setText(message);
 
 
@@ -85,9 +97,16 @@ public class SendMessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                sendSMS("+" + phone, mMessageEditText.getText().toString());
-                mTrasparentFrame.setVisibility(View.VISIBLE);
-                mProgressBar.setVisibility(View.VISIBLE);
+                if (mMessageEditText.getText().toString().isEmpty()){
+                    mMessageEditText.setError("Cannot be empty");
+                    mMessageEditText.requestFocus();
+                }
+                else{
+                    sendSMS("+" + phone, mMessageEditText.getText().toString());
+                    mTrasparentFrame.setVisibility(View.VISIBLE);
+                    mProgressBar.setVisibility(View.VISIBLE);
+                }
+
             }
         });
 
@@ -130,28 +149,97 @@ public class SendMessageActivity extends AppCompatActivity {
             httppost.setEntity(new UrlEncodedFormEntity(
                     nameValuePairs));
 
-            // Execute HTTP Post Request
-            HttpResponse response = httpclient.execute(httppost);
-            HttpEntity entity = response.getEntity();
+
+
+//            // Execute HTTP Post Request
+//            HttpResponse response = httpclient.execute(httppost);
+//            HttpEntity entity = response.getEntity();
+////            System.out.println("Entity post is: "
+////                    + EntityUtils.toString(entity));
+//            Log.e("http log ", "Entity post is: "
+//                    + EntityUtils.toString(entity));
+//
+//            mProgressBar.setVisibility(GONE);
+//            mTrasparentFrame.setVisibility(GONE);
+//            mMessageEditText.setText("");
+//            Toast.makeText(getBaseContext(), "Message sent", Toast.LENGTH_LONG).show();
+
+
+//        } catch (ClientProtocolException e) {
+
+            SendMessageAsyncTask asyncTask = new SendMessageAsyncTask(httpclient, httppost);
+            asyncTask.execute();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            mFlag = true;
+        }
+
+        if (!mFlag){
+            long time = System.currentTimeMillis();
+            History history = new History(mName, mOtp, time);
+            mViewModel.insert(history);
+            Toast.makeText(this, "Message sent!", Toast.LENGTH_LONG).show();
+        }
+        else{
+            mFlag = false;
+
+        }
+
+
+        mProgressBar.setVisibility(GONE);
+        mTrasparentFrame.setVisibility(GONE);
+    }
+
+    private class SendMessageAsyncTask extends AsyncTask<Void, Void, Void>{
+
+        private HttpClient mHttpClient;
+        private HttpPost mHttpPost;
+
+        public SendMessageAsyncTask(HttpClient httpClient, HttpPost httpPost){
+            mHttpClient = httpClient;
+            mHttpPost = httpPost;
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressBar.setVisibility(View.VISIBLE);
+            mTrasparentFrame.setVisibility(View.VISIBLE);
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            try{
+                HttpResponse response = mHttpClient.execute(mHttpPost);
+                HttpEntity entity = response.getEntity();
 //            System.out.println("Entity post is: "
 //                    + EntityUtils.toString(entity));
             Log.e("http log ", "Entity post is: "
                     + EntityUtils.toString(entity));
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                mIsExceptionThrown = true;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
 
             mProgressBar.setVisibility(GONE);
             mTrasparentFrame.setVisibility(GONE);
             mMessageEditText.setText("");
-            Toast.makeText(getBaseContext(), "Message sent", Toast.LENGTH_LONG).show();
+            if (mIsExceptionThrown){
+                //Message not sent
+                Toast.makeText(getBaseContext(), "Failed!", Toast.LENGTH_LONG).show();
 
-
-        } catch (ClientProtocolException e) {
-
-        } catch (IOException e) {
-
+            }
+//            Toast.makeText(getBaseContext(), "Message sent", Toast.LENGTH_LONG).show();
         }
-
-        mProgressBar.setVisibility(GONE);
-        mTrasparentFrame.setVisibility(GONE);
     }
 
 }

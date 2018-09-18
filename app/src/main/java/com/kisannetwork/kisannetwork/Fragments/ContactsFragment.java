@@ -4,19 +4,17 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.kisannetwork.kisannetwork.Activity.ContactDetailActivity;
-import com.kisannetwork.kisannetwork.Contact;
-import com.kisannetwork.kisannetwork.ContactsAdapter;
+import com.kisannetwork.kisannetwork.Model.Contact;
+import com.kisannetwork.kisannetwork.Adapter.ContactsAdapter;
 import com.kisannetwork.kisannetwork.R;
 
 import org.json.JSONArray;
@@ -56,8 +54,8 @@ public class ContactsFragment extends Fragment implements ContactsAdapter.ItemCl
                 String email = contact.getString("email");
                 String gender = contact.getString("gender");
                 String phone = contact.getString("phone");
-                //TODO Every contact has my number
-                Contact contactObject = new Contact(age, name, gender, email, "918006303375");
+                //TODO Every contact has this number
+                Contact contactObject = new Contact(age, name, gender, email, "919971792703");
                 mContacts.add(contactObject);
 
             }
@@ -103,7 +101,7 @@ public class ContactsFragment extends Fragment implements ContactsAdapter.ItemCl
     @Override
     public void onItemClick(View view, int position) {
 
-        Toast.makeText(getContext(), mContacts.get(position).getName() + " clicked!" , Toast.LENGTH_LONG).show();
+//        Toast.makeText(getContext(), mContacts.get(position).getName() + " clicked!" , Toast.LENGTH_LONG).show();
         Intent intent = new Intent(getContext(), ContactDetailActivity.class);
         intent.putExtra("name", mContacts.get(position).getName());
         intent.putExtra("phone", mContacts.get(position).getPhone());
